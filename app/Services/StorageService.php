@@ -2,22 +2,25 @@
 
 namespace App\Services;
 
+use App\Interfaces\BoxFactory;
 use App\Interfaces\BoxInterface;
 use App\Interfaces\RoomInterface;
 
-class StorageService
+abstract class StorageService
 {
     /**
      * @var RoomInterface[]
      */
     private array $rooms;
+    protected BoxFactory $factory;
 
     /**
      * @param RoomInterface[] $rooms
      */
-    public function __construct(array $rooms)
+    public function __construct(array $rooms, BoxFactory $factory)
     {
         $this->rooms = $rooms;
+        $this->factory = $factory;
     }
 
     /**
@@ -27,7 +30,31 @@ class StorageService
     public function importBoxes(array $boxes): void
     {
         $room = $this->getMinLoadRoom();
+        if ($room) {
+            $room->import($boxes);
+        }
+    }
+
+    public function createBoxes(int $count, string $type): void
+    {
+        $boxes = $this->factory->createBoxes($count, $type);
+        $this->importBoxes($boxes);
+    }
+
+    public function moveBoxes($room, array $boxes)
+    {
         $room->import($boxes);
+    }
+
+    /**
+     * @param BoxInterface[] $boxes
+     * @return void
+     */
+    public function exportBoxes(array $boxes): void
+    {
+        foreach ($boxes as $box) {
+            $box->exportBox();
+        }
     }
 
     private function getMinLoadRoom(): ?RoomInterface
@@ -45,4 +72,5 @@ class StorageService
 
         return $minRoom;
     }
+
 }

@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Interfaces\RoomInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Room extends Model implements \App\Interfaces\RoomInterface
+class Room extends Model implements RoomInterface
 {
     use HasFactory;
     protected $fillable = [
@@ -26,5 +27,12 @@ class Room extends Model implements \App\Interfaces\RoomInterface
     public function countBoxes(): int
     {
         return $this->boxes()->count();
+    }
+
+    public function exportBoxes(array $boxes): void
+    {
+        foreach ($boxes as $box) {
+            $this->boxes()->delete($box->id);
+        }
     }
 }
