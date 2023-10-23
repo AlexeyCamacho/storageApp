@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::any( '/{any}', function(){
+    return view('main');
+})->where('any', '^((?!api\/).)*$');
+
+Route::prefix("api")->group(function () {
+
 });
