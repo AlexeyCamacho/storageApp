@@ -13,10 +13,10 @@ class TestController extends Controller
     public function test()
     {
         $service = new FruitsBoxStorage();
-        $data = ['apple' => 4, 'pear' => 3];
+        $data = ['apple' => 4, 'pear' => 2, 'orange' => 12];
 
         foreach ($data as $key => $value) {
-            //$service->createBoxes($value, $key);
+            $service->createBoxes($value, $key);
         }
         $exportBoxes = [];
         foreach ($data as $key => $value) {
@@ -27,7 +27,7 @@ class TestController extends Controller
             $exportBoxes = array_merge($exportBoxes, $boxes);
         }
 
-        $service->moveBoxes(Room::find(1), $exportBoxes);
+        //$service->moveBoxes(Room::find(1), $exportBoxes);
 
         //$service->exportBoxes($exportBoxes);
     }

@@ -4,35 +4,37 @@ namespace App\Http\Controllers;
 
 use App\Services\BoxService;
 use App\Services\FruitsBoxStorage;
+use App\Services\RoomService;
 use App\Services\StorageService;
-use http\Env\Response;
 use Illuminate\Http\Request;
-use function Symfony\Component\Translation\t;
 
 class BoxesController extends Controller
 {
 
     private StorageService $storageService;
     private BoxService $boxService;
+    private RoomService $roomService;
 
     public function __construct()
     {
         $this->storageService = new FruitsBoxStorage();
         $this->boxService = new BoxService();
-
+        $this->roomService = new RoomService();
     }
 
     public function importBoxes(Request $request)
     {
-        foreach ($request->only('data') as $key => $value) {
+        foreach ($request->input('data') as $key => $value) {
             $this->storageService->createBoxes($value, $key);
         }
+
+        return true;
     }
 
     public function exportBoxes(Request $request)
     {
         $exportBoxes = [];
-        foreach ($request->only('data') as $key => $value) {
+        foreach ($request->input('data') as $key => $value) {
             $boxes = $this->boxService->getBoxes($value, $key);
             if (count($boxes) < $value) {
                 abort(422, 'Недостаточно ящиков ' . $key . ' на складе.');
@@ -41,11 +43,15 @@ class BoxesController extends Controller
         }
 
         $this->storageService->exportBoxes($exportBoxes);
+
+        return true;
     }
 
     public function moveBoxes(Request $request)
     {
         $data = $request->only('data');
-        $this->storageService->moveBoxes($data['room'], $data['boxes']);
+        $roomTo = $this->roomService->findRoom($data['room']);
+        $boxes = $this->boxService->getBoxesById($data['boxes']);
+        $this->storageService->moveBoxes($roomTo, $boxes);
     }
 }

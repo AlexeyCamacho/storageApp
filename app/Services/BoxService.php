@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Box;
 use App\Models\Boxes\AppleBox;
 use App\Models\Boxes\OrangesBox;
 use App\Models\Boxes\PearsBox;
@@ -20,5 +21,10 @@ class BoxService
         }
 
         return null;
+    }
+
+    public function getBoxesById(array|int $id)
+    {
+        return Box::find($id);
     }
 }
