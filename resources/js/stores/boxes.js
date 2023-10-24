@@ -33,5 +33,18 @@ export const useBoxesStore = defineStore('boxes',{
                 toast.error(error.response.data.message);
             }
         },
+        async moveBoxes(data) {
+            try {
+                await apiBoxesService.moveBoxes(data)
+                    .then((response) => {
+                        toast.success('Ящики перемещены');
+                        console.log(response.data)
+                        return true;
+                    })
+            } catch (error) {
+                this.error = error;
+                toast.error(error.response.data.message);
+            }
+        },
     }
 })

@@ -22,10 +22,12 @@ Route::any( '/{any}', function(){
 })->where('any', '^((?!api\/).)*$');
 
 Route::prefix("api")->group(function () {
-    Route::prefix("boxes")->group(function () {
-        Route::post('/', [BoxesController::class, 'importBoxes']);
-        Route::put('/', [BoxesController::class, 'moveBoxes']);
-        Route::delete('/', [BoxesController::class, 'exportBoxes']);
+    Route::middleware('clearRoomsCache')->group(function () {
+        Route::prefix("boxes")->group(function () {
+            Route::post('/', [BoxesController::class, 'importBoxes']);
+            Route::put('/', [BoxesController::class, 'moveBoxes']);
+            Route::delete('/', [BoxesController::class, 'exportBoxes']);
+        });
     });
 
     Route::prefix("rooms")->group(function () {

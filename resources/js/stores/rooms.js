@@ -10,7 +10,6 @@ export const useRoomsStore = defineStore('rooms',{
     }),
     actions: {
         async loadRooms() {
-            this.rooms = []
             this.loading = true
             try {
                 this.rooms = await apiRoomsService.getAllRooms()

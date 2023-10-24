@@ -14,7 +14,7 @@ export default {
     },
     async moveBoxes(data) {
         return axios.put(`${path}`, {
-            data: {data: data}
+            data: data
         });
     },
 }

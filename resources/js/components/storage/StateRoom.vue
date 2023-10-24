@@ -1,6 +1,6 @@
 <template>
     <div class="border-gray-400 border-2 rounded-md p-2">
-        <div class="border-b-2 border-gray-300">
+        <div class="border-b-2 border-gray-300 flex justify-between">
             {{ this.room.name }}
         </div>
         <div>

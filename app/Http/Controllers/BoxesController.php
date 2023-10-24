@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ImportExportBoxesRequest;
+use App\Http\Requests\MoveBoxesRequest;
 use App\Services\BoxService;
 use App\Services\FruitsBoxStorage;
 use App\Services\RoomService;
@@ -22,16 +24,14 @@ class BoxesController extends Controller
         $this->roomService = new RoomService();
     }
 
-    public function importBoxes(Request $request)
+    public function importBoxes(ImportExportBoxesRequest $request): void
     {
         foreach ($request->input('data') as $key => $value) {
             $this->storageService->createBoxes($value, $key);
         }
-
-        return true;
     }
 
-    public function exportBoxes(Request $request)
+    public function exportBoxes(ImportExportBoxesRequest $request): void
     {
         $exportBoxes = [];
         foreach ($request->input('data') as $key => $value) {
@@ -43,15 +43,22 @@ class BoxesController extends Controller
         }
 
         $this->storageService->exportBoxes($exportBoxes);
-
-        return true;
     }
 
-    public function moveBoxes(Request $request)
+    public function moveBoxes(MoveBoxesRequest $request): void
     {
-        $data = $request->only('data');
-        $roomTo = $this->roomService->findRoom($data['room']);
-        $boxes = $this->boxService->getBoxesById($data['boxes']);
-        $this->storageService->moveBoxes($roomTo, $boxes);
+        $moveBoxes = [];
+        $data = $request->input('data');
+        $roomTo = $this->roomService->findRoom($data['to']);
+
+        foreach ($data['countBoxes'] as $key => $value) {
+            $boxes = $this->boxService->getBoxes($value, $key, $data['from']);
+            if (count($boxes) < $value) {
+                abort(422, 'Недостаточно ящиков ' . $key . ' в помещении.');
+            }
+            $moveBoxes = array_merge($moveBoxes, $boxes);
+        }
+
+        $this->storageService->moveBoxes($roomTo, $moveBoxes);
     }
 }
